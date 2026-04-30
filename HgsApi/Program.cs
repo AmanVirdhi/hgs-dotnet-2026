@@ -21,6 +21,13 @@ builder.Services.AddDbContext<ApiDbContext>(options =>
 
 var app = builder.Build();
 
+// 🔥 FIX for Render HTTPS
+app.Use(async (context, next) =>
+{
+    context.Request.Scheme = "https";
+    await next();
+});
+
 app.MapOpenApi();
 
 // 🔥 Swagger UI always enabled
