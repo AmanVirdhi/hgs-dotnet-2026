@@ -3,7 +3,6 @@ using HgsApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//to conntect with cross origin
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -14,10 +13,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
@@ -27,20 +23,19 @@ var app = builder.Build();
 
 app.MapOpenApi();
 
-if (app.Environment.IsDevelopment())
+// 🔥 Swagger UI always enabled
+app.UseSwaggerUI(options =>
 {
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "HgsApi");
-    });
-}
+    options.SwaggerEndpoint("/openapi/v1.json", "HgsApi");
+});
 
-app.UseHttpsRedirection();
-
-app.UseCors("AllowAll"); //for CORS Connection
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+// root endpoint
+app.MapGet("/", () => "API is running 🚀");
 
 app.Run();
