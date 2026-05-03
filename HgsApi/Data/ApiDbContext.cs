@@ -22,7 +22,7 @@ namespace HgsApi.Data
                 entity.Property(e => e.Email).HasColumnName("email");
                 entity.Property(e => e.Password).HasColumnName("password");
 
-                entity.HasIndex(e => e.Email).IsUnique(); //IMPORTANT
+                entity.HasIndex(e => e.Email).IsUnique();
             });
 
             //HGS INFO TABLE
