@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using HgsApi.Data;
 using HgsApi.Models;
+using HgsApi.Models.DTOs;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HgsApi.Controllers
 {
@@ -163,6 +164,31 @@ namespace HgsApi.Controllers
                 username = user.Username,
                 email = user.Email
             });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email) ||
+                string.IsNullOrWhiteSpace(dto.NewPassword))
+            {
+                return BadRequest(new { message = "Email and new password required" });
+            }
+
+            var email = dto.Email.ToLower();
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
+                return NotFound(new { message = "User not found" });
+
+            //hash new password
+            user.Password = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Password reset successful" });
         }
     }
 }
